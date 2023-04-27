@@ -8,6 +8,7 @@
 #pragma once
 
 #include <unistd.h>
+#include <stdlib.h>
 
 int my_putstr(char const *str);
 void printUsage();
