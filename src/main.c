@@ -8,7 +8,7 @@
 
 int main(int ac, char **av)
 {
-    if (ac == 1) {
+    if (ac != 5) {
         printUsage();
         return 84;
     }
