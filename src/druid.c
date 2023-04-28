@@ -6,6 +6,7 @@
 */
 
 #include "../inc/druid.h"
+#include "../inc/utils.h"
 
 void *druid_function(void *arg)
 {
