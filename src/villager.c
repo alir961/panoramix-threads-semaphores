@@ -16,7 +16,8 @@ bool drink_potion(int id)
         pthread_mutex_unlock(data.mutex);
         nb_fights_left--;
         data.nb_fights_left[id] = nb_fights_left;
-        printf("Villager %d: Take that roman scum! Only %d left.\n", id, nb_fights_left);
+        printf("Villager %d: Take that roman scum! ", id);
+        printf("Only %d left.\n", nb_fights_left);
         return true;
     }
     return false;
@@ -25,7 +26,8 @@ bool drink_potion(int id)
 bool villager_handling(int id)
 {
     pthread_mutex_lock(data.mutex);
-    printf("Villager %d: I need a drink... I see %d servings left.\n", id, data.portions_left);
+    printf("Villager %d: I need a drink... ", id);
+    printf("I see %d servings left.\n", data.portions_left);
     if (drink_potion(id))
         return true;
     if (data.nb_refills > 0) {

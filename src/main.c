@@ -35,7 +35,7 @@ void parser(char **av)
 int main(int ac, char **av)
 {
     pthread_t *thread = malloc(sizeof(pthread_t) * (data.nb_villagers + 1));
-    
+
     if (ac != 5) {
         printUsage();
         return 84;

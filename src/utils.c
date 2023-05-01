@@ -17,7 +17,7 @@ int my_putstr(char const *str)
     }
 }
 
-void printUsage()
+void printUsage(void)
 {
     my_putstr("USAGE: ./panoramix <nb_villagers> ");
     my_putstr("<pot_size> <nb_fights> <nb_refills>\n");
