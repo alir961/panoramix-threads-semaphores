@@ -15,9 +15,9 @@ void* villager_thread(void *arg)
     for (int i = 0; i < data.nb_fights; i++) {
         sem_wait(data.pot_sem);
         if (data.portions_left > 0) {
-            data.portions_left--;
             printf("Villager %d: I need a drink... I see %d servings left.\n", id, data.portions_left);
             sem_post(data.pot_sem);
+            data.portions_left--;
         } else {
             sem_wait(data.refill_mutex);
             if (data.nb_refills > 0) {
