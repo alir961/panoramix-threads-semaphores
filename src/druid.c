@@ -7,25 +7,21 @@
 
 #include "../inc/panoramix.h"
 
-void *druid_function()
+void *druid_thread()
 {
-    printf("Druid: I’m ready... but sleepy...\n");
-    int portions_to_fill = data.pot_size;
-    int i;
-    for (i = 0; i < data.nb_refills; i++) {
-        pthread_mutex_lock(data.pot_mutex);
-        while (data.portions_left > 0)
-         {
-            pthread_cond_wait(data.pot_empty_cv, data.pot_mutex);
+    printf("Druid: I'm ready... but sleepy...\n");
+    while (1) {
+        sem_wait(data.druid_sem);
+        if (data.nb_refills == 0)
+            break;
+        if (data.pot_size == 0) {
+            data.nb_refills--;
+            data.portions_left = data.pot_size;
+            printf("Druid: Ah! Yes, yes, I'm awake! Working on it! Beware I can only make %d more refills after this one.\n", data.nb_refills);
+            sem_post(data.villagers_sem);
+            if (data.nb_refills == 0)
+                break;
         }
-        data.portions_left = portions_to_fill;
-        pthread_mutex_unlock(data.pot_mutex);
-        pthread_cond_signal(data.pot_empty_cv);
-        printf("Druid: Ah! Yes, yes, I’m awake! Working on it! ");
-        printf("Beware I can only make %d more refills after this one.\n", data.nb_refills - i - 1);
-        portions_to_fill = (data.portions_left > data.pot_size) ? data.pot_size : data.portions_left;
     }
-    if (data.portions_left == 0)
-        printf("Druid: I’m out of viscum. I’m going back to... zZz\n");
-    return NULL;
+    printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
 }
