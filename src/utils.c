@@ -25,36 +25,30 @@ void printUsage(void)
 
 void free_all(pthread_t *druid, pthread_t *villager)
 {
-    for (int i = 0; i < data.nb_villagers; i++)
-        free(data.nb_fights_left[i]);
-    free(data.nb_fights_left);
     pthread_mutex_destroy(&data.mutex);
     sem_destroy(&data.villagers_sem);
     sem_destroy(&data.druid_sem);
+    free(data.nb_fights_left);
     free(druid);
     free(villager);
 }
 
 void create_join_thread(pthread_t *druid, pthread_t *villager)
 {
-    if (pthread_create(&druid[data.nb_villagers], NULL, druid_thread, NULL)) {
+    if (pthread_create(&druid, NULL, druid_thread, NULL)) {
         printf("Error creating druid thread\n");
         return 84;
     }
+
     for (int i = 0; i < data.nb_villagers; i++) {
         if (pthread_create(&villager[i], NULL, villager_thread, (void *)i)) {
             printf("Error creating villager thread\n");
-            return 84;
+            exit(1);
         }
     }
-    if (pthread_join(druid[data.nb_villagers], NULL)) {
-        printf("Error joining druid thread\n");
-        return 84;
-    }
+
     for (int i = 0; i < data.nb_villagers; i++) {
-        if (pthread_join(villager[i], NULL)) {
-            printf("Error joining villager thread\n");
-            return 84;
-        }
+        pthread_join(villager[i], NULL);
     }
+    pthread_join(*druid, NULL);
 }
