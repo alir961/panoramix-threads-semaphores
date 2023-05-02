@@ -26,9 +26,9 @@ void parser(char **av)
     data.villagers_sem = malloc(sizeof(sem_t));
     sem_init(data.villagers_sem, 0, 0);
 
-    data.nb_fights_left = malloc(sizeof(int) * data.nb_villagers);
-    for (int i = 0; i < data.nb_villagers; i++) {
-        data.nb_fights_left[i] = data.nb_fights;
+    data.nb_fights_left = malloc(sizeof(int) * (data.nb_villagers * data.nb_fights));
+    for (int id = 0; id < data.nb_villagers; id++) {
+        data.nb_fights_left[id] = data.nb_fights;
     }
 }
 

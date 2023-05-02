@@ -16,6 +16,7 @@ bool drink_potion(int id)
         pthread_mutex_unlock(data.mutex);
         nb_fights_left--;
         data.nb_fights_left[id] = nb_fights_left;
+        data.portions_left--;
         printf("Villager %d: Take that roman scum! ", id);
         printf("Only %d left.\n", nb_fights_left);
         return true;
