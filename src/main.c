@@ -24,7 +24,7 @@ void parser(char **av)
     sem_init(data.druid_sem, 0, 0);
 
     data.villagers_sem = malloc(sizeof(sem_t));
-    sem_init(data.villagers_sem, 0, 0);
+    sem_init(data.villagers_sem, 0, 1);
 
     data.nb_fights_left = malloc(sizeof(int) * (data.nb_villagers * data.nb_fights));
     for (int id = 0; id < data.nb_villagers; id++) {
@@ -34,14 +34,15 @@ void parser(char **av)
 
 int main(int ac, char **av)
 {
-    pthread_t *thread = malloc(sizeof(pthread_t) * (data.nb_villagers + 1));
+    pthread_t *druid = malloc(sizeof(pthread_t) * (data.nb_villagers + 1));
+    pthread_t *villager = malloc(sizeof(pthread_t) * (data.nb_villagers + 1));
 
     if (ac != 5) {
         printUsage();
         return 84;
     }
     parser(av);
-    create_join_thread(thread);
-    free_all(thread);
+    create_join_thread(druid, villager);
+    free_all(druid, villager);
     return 0;
 }

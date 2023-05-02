@@ -15,6 +15,13 @@
 
 #pragma once
 
+#define VILLAGER_NEED(id, portions_left) "Villager %d: I need a drink... \
+I see %d servings left.\n", id, portions_left
+#define VILLAGER_ATTACK(id, nb_fight_left) "Villager %d: Take that roman scum! \
+Only %d left.\n", id, nb_fight_left
+#define REFILL(nb_refills) "Druid: Ah! Yes, yes. I'm awake! Working on it! \
+Beware I can only make %d more refills after this one.\n", nb_refills
+
 typedef struct datathread_s {
     int nb_villagers;
     int pot_size;
@@ -33,5 +40,5 @@ int my_putstr(char const *str);
 void printUsage(void);
 void *druid_thread(void);
 void *villager_thread(void *arg);
-void free_all(pthread_t *thread);
-void create_join_thread(pthread_t *thread);
+void free_all(pthread_t *druid, pthread_t *villager);
+void create_join_thread(pthread_t *druid, pthread_t *villager);
