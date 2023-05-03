@@ -29,6 +29,7 @@ typedef struct datathread_s {
     int *nb_fights_left;
     int nb_refills;
     int portions_left;
+    int max_portions;
     pthread_mutex_t *mutex;
     sem_t *druid_sem;
     sem_t *villagers_sem;

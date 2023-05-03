@@ -16,6 +16,7 @@ void parser(char **av)
     data.nb_refills = atoi(av[4]);
 
     data.portions_left = data.pot_size;
+    data.max_portions = data.pot_size;
 
     data.mutex = malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init(data.mutex, NULL);

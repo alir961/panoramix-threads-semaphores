@@ -12,12 +12,15 @@ void *druid_thread(void)
     printf("Druid: I'm ready... but sleepy...\n");
     while (1) {
         sem_wait(data.druid_sem);
+        pthread_mutex_lock(data.mutex);
         if (data.nb_refills > 0 && data.pot_size == 0) {
-            data.portions_left = data.pot_size;
+            data.portions_left = data.max_portions - 1;
             data.nb_refills--;
             printf(REFILL(data.nb_refills));
             sem_post(data.villagers_sem);
-        } else {
+        }
+        pthread_mutex_unlock(data.mutex);
+        if (data.nb_refills <= 0 || data.pot_size > 0) {
             break;
         }
     }

@@ -13,13 +13,14 @@ bool drink_potion(int id)
 
     if (data.pot_size > 0) {
         data.pot_size--;
-        pthread_mutex_unlock(data.mutex);
         nb_fights_left--;
         data.nb_fights_left[id] = nb_fights_left;
         data.portions_left--;
+        pthread_mutex_unlock(data.mutex);
         printf(VILLAGER_ATTACK(id, nb_fights_left));
         return true;
     }
+    pthread_mutex_unlock(data.mutex);
     return false;
 }
 
@@ -46,7 +47,7 @@ void *villager_thread(void *arg)
 
     printf("Villager %d: Going into battle!\n", id);
 
-    while (data.nb_fights_left[id] != 0) {
+    while (data.nb_fights_left[id] > 0) {
         if (!villager_handling(id))
             break;
     }
