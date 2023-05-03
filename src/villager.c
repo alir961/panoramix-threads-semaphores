@@ -17,7 +17,7 @@ bool drink_potion(int id)
         data.nb_fights_left[id] = nb_fights_left;
         data.portions_left--;
         pthread_mutex_unlock(data.mutex);
-        printf(VILLAGER_ATTACK(id, nb_fights_left));
+        printf(ATTACK(id, nb_fights_left));
         return true;
     }
     pthread_mutex_unlock(data.mutex);
