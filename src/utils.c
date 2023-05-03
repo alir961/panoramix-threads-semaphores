@@ -35,15 +35,16 @@ void free_all(pthread_t *druid, pthread_t *villager)
 
 void create_join_thread(pthread_t *druid, pthread_t *villager)
 {
-    if (pthread_create(&druid, NULL, druid_thread, NULL)) {
-        printf("Error creating druid thread\n");
-        return 84;
+    int id = data.nb_villagers;
+    if (pthread_create(&druid, NULL, druid_thread, (void *)id)) {
+            printf("Error creating druid thread\n");
+            exit(84);
     }
 
-    for (int i = 0; i < data.nb_villagers; i++) {
-        if (pthread_create(&villager[i], NULL, villager_thread, (void *)i)) {
+    for (int id = 0; id < data.nb_villagers; id++) {
+        if (pthread_create(&villager[id], NULL, villager_thread, (void *)id)) {
             printf("Error creating villager thread\n");
-            exit(1);
+            exit(84);
         }
     }
 

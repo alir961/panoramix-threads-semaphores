@@ -39,7 +39,7 @@ extern datathread_t data;
 
 int my_putstr(char const *str);
 void print_usage(void);
-void *druid_thread(void);
+void *druid_thread(void *arg);
 void *villager_thread(void *arg);
 void free_all(pthread_t *druid, pthread_t *villager);
 void create_join_thread(pthread_t *druid, pthread_t *villager);
