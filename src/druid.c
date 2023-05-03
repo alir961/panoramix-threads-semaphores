@@ -9,7 +9,7 @@
 
 void *druid_thread(void *arg)
 {
-    int id = (int*) arg;
+    int id = (int) arg;
     int nb_villagers_left = data.nb_fights_left[id];
     printf("Druid: I'm ready... but sleepy...\n");
     while (1) {

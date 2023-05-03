@@ -46,7 +46,7 @@ bool villager_handling(int id)
 
 void *villager_thread(void *arg)
 {
-    int id = (int*) arg;
+    int id = (int) arg;
 
     printf("Villager %d: Going into battle!\n", id);
 
