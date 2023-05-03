@@ -30,8 +30,11 @@ bool villager_handling(int id)
     printf(VILLAGER_NEED(id, data.portions_left));
     if (drink_potion(id))
         return true;
-    while (data.nb_refills > 0) {
+    if (!data.refill_requested) {
         printf("Villager %d: Hey Pano wake up! We need more potion.\n", id);
+        pthread_mutex_lock(data.mutex);
+        data.refill_requested = true;
+        pthread_mutex_unlock(data.mutex);
         sem_post(data.druid_sem);
         sem_wait(data.villagers_sem);
         if (drink_potion(id))

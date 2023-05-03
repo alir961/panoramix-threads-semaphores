@@ -20,6 +20,7 @@ void *druid_thread(void *arg)
             data.portions_left = data.max_portions;
             data.nb_refills--;
             printf(REFILL(data.nb_refills));
+            data.refill_requested = false;
             sem_post(data.villagers_sem);
         }
         pthread_mutex_unlock(data.mutex);
