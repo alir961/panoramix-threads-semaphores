@@ -17,7 +17,7 @@ void *druid_thread(void *arg)
         pthread_mutex_lock(data.mutex);
         if (data.nb_refills > 0 && data.pot_size == 0) {
             data.pot_size = data.max_portions;
-            data.portions_left = data.max_portions - 1;
+            data.portions_left = data.max_portions;
             data.nb_refills--;
             printf(REFILL(data.nb_refills));
             sem_post(data.villagers_sem);

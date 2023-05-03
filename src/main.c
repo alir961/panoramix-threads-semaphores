@@ -22,7 +22,7 @@ void parser(char **av)
     sem_init(data.druid_sem, 0, 0);
 
     data.villagers_sem = malloc(sizeof(sem_t));
-    sem_init(data.villagers_sem, 0, 1);
+    sem_init(data.villagers_sem, 0, 0);
 
     if ((data.nb_fights_left = malloc(sizeof(int) * data.nb_villagers)) ==
         NULL)
