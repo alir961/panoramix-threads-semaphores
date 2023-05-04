@@ -55,5 +55,6 @@ void *villager_thread(void *arg)
             break;
         sleep(1);
     }
+    data.nb_fights_left[id] = 0;
     printf("Villager %d: I'm going to sleep now.\n", id);
 }
