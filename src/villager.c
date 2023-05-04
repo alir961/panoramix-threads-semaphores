@@ -53,6 +53,7 @@ void *villager_thread(void *arg)
     while (data.nb_fights_left[id] > 0) {
         if (!villager_handling(id))
             break;
+        sleep(1);
     }
     printf("Villager %d: I'm going to sleep now.\n", id);
 }
