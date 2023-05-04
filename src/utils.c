@@ -25,9 +25,9 @@ void print_usage(void)
 
 void free_all(pthread_t *druid, pthread_t *villager)
 {
-    pthread_mutex_destroy(&data.mutex);
-    sem_destroy(&data.villagers_sem);
-    sem_destroy(&data.druid_sem);
+    pthread_mutex_destroy(data.mutex);
+    sem_destroy(data.villagers_sem);
+    sem_destroy(data.druid_sem);
     free(data.nb_fights_left);
     free(druid);
     free(villager);
@@ -45,7 +45,7 @@ void create_join_thread(pthread_t *druid, pthread_t *villager)
         id2 = id;
     }
 
-    if (pthread_create(&druid, NULL, druid_thread, (void *)id2)) {
+    if (pthread_create(druid, NULL, druid_thread, (void *)id2)) {
             printf("Error creating druid thread\n");
             exit(84);
     }
