@@ -21,7 +21,6 @@ void parser(char **av)
     pthread_mutex_init(data.mutex, NULL);
     data.druid_sem = malloc(sizeof(sem_t));
     sem_init(data.druid_sem, 0, 0);
-
     data.villagers_sem = malloc(sizeof(sem_t));
     sem_init(data.villagers_sem, 0, 0);
 
