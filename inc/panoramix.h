@@ -30,6 +30,7 @@ typedef struct datathread_s {
     int nb_refills;
     int portions_left;
     int max_portions;
+    int nb_villagers_left;
     bool refill_requested;
     pthread_mutex_t *mutex;
     sem_t *druid_sem;

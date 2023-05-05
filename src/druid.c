@@ -10,7 +10,6 @@
 void *druid_thread(void *arg)
 {
     int id = (int) arg;
-    int nb_villagers_left;
     printf("Druid: I'm ready... but sleepy...\n");
     while (1) {
         sem_wait(data.druid_sem);
@@ -23,9 +22,9 @@ void *druid_thread(void *arg)
             data.refill_requested = false;
             sem_post(data.villagers_sem);
         }
-        nb_villagers_left = data.nb_fights_left[id];
+        data.nb_villagers_left = data.nb_fights_left[id];
         pthread_mutex_unlock(data.mutex);
-        if (data.nb_refills <= 0 || nb_villagers_left <= 0) {
+        if (data.nb_refills <= 0 || data.nb_villagers_left <= 0) {
             break;
         }
     }
