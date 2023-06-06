@@ -9,12 +9,12 @@
 
 void *druid_thread(void *arg)
 {
-    int id = (int) arg;
+    intptr_t id = (intptr_t) arg;
     printf("Druid: I'm ready... but sleepy...\n");
-    while (1) {
+    while (data.nb_refills > 0) {
         sem_wait(data.druid_sem);
         pthread_mutex_lock(data.mutex);
-        if (data.nb_refills > 0 && data.pot_size == 0) {
+        if (data.pot_size == 0) {
             data.pot_size = data.max_portions;
             data.portions_left = data.max_portions;
             data.nb_refills--;
@@ -29,4 +29,5 @@ void *druid_thread(void *arg)
         }
     }
     printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
+    return NULL;
 }

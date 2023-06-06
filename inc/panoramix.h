@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -15,9 +16,9 @@
 
 #pragma once
 
-#define VILLAGER_NEED(id, portions_left) "Villager %d: I need a drink... \
+#define VILLAGER_NEED(id, portions_left) "Villager %ld: I need a drink... \
 I see %d servings left.\n", id, portions_left
-#define ATTACK(id, nb_fight_left) "Villager %d: Take that roman scum! \
+#define ATTACK(id, nb_fight_left) "Villager %ld: Take that roman scum! \
 Only %d left.\n", id, nb_fight_left
 #define REFILL(nb_refills) "Druid: Ah! Yes, yes. I'm awake! Working on it! \
 Beware I can only make %d more refills after this one.\n", nb_refills

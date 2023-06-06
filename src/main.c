@@ -27,7 +27,7 @@ void parser(char **av)
     if ((data.nb_fights_left = malloc(sizeof(int) * data.nb_villagers)) ==
         NULL)
         exit(84);
-    for (int id = 0; id < data.nb_villagers; id++) {
+    for (intptr_t id = 0; id < data.nb_villagers; id++) {
         data.nb_fights_left[id] = data.nb_fights;
     }
 }
