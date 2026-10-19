@@ -12,6 +12,12 @@ make
 
 ```
 Druid: I'm ready... but sleepy...
+Villager 2: Going into battle!
+Villager 2: I need a drink... I see 2 servings left.
+Villager 2: Take that roman scum! Only 1 left.
+Villager 2: I need a drink... I see 1 servings left.
+Villager 2: Take that roman scum! Only 0 left.
+Villager 2: I'm going to sleep now.
 Villager 0: Going into battle!
 Villager 0: I need a drink... I see 0 servings left.
 Villager 0: Hey Pano wake up! We need more potion.
@@ -20,6 +26,8 @@ Druid: I'm out of viscum. I'm going back to... zZz
 Villager 0: Take that roman scum! Only 1 left.
 ...
 ```
+
+Thread scheduling decides the order, so it changes from run to run.
 
 ## Design
 
