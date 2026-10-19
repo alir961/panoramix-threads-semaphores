@@ -1,27 +1,37 @@
 ##
 ## EPITECH PROJECT, 2023
-## B-CCP-400-LYN-4-1-panoramix-ali.raad
+## panoramix
 ## File description:
 ## Makefile
 ##
 
-FLAGS = -Werror -Wall -Wextra
-
-SRC	=	$(wildcard src/*.c)
-
-OBJ	=	$(SRC:.c=.o)
-
+CC		=	gcc
+CFLAGS	=	-Wall -Wextra -Werror -pthread
+SRC		=	$(wildcard src/*.c)
+OBJ		=	$(SRC:.c=.o)
 NAME	=	panoramix
 
 all:	$(NAME)
 
 $(NAME):	$(OBJ)
-	gcc -o $(NAME) $(OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+
+tsan:
+	$(CC) $(CFLAGS) -g -fsanitize=thread -o $(NAME)_tsan $(SRC)
+
+asan:
+	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -o $(NAME)_asan $(SRC)
+
+tests_run:	tsan asan
+	tests/stress.sh ./$(NAME)_tsan
+	tests/stress.sh ./$(NAME)_asan
 
 clean:
-	cd src && rm -f *.o
+	rm -f $(OBJ)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(NAME)_tsan $(NAME)_asan
 
 re: fclean all
+
+.PHONY: all tsan asan tests_run clean fclean re

@@ -1,48 +1,41 @@
 /*
 ** EPITECH PROJECT, 2023
-** B-CCP-400-LYN-4-1-panoramix-ali.raad
+** panoramix
 ** File description:
-** utils
+** panoramix
 */
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <stdbool.h>
 
 #pragma once
 
-#define VILLAGER_NEED(id, portions_left) "Villager %ld: I need a drink... \
-I see %d servings left.\n", id, portions_left
-#define ATTACK(id, nb_fight_left) "Villager %ld: Take that roman scum! \
-Only %d left.\n", id, nb_fight_left
-#define REFILL(nb_refills) "Druid: Ah! Yes, yes. I'm awake! Working on it! \
-Beware I can only make %d more refills after this one.\n", nb_refills
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define EXIT_ERROR 84
 
 typedef struct datathread_s {
     int nb_villagers;
     int pot_size;
     int nb_fights;
-    int *nb_fights_left;
     int nb_refills;
-    int portions_left;
-    int max_portions;
-    int nb_villagers_left;
+    int servings_left;
+    int active_villagers;
+    int waiting_villagers;
     bool refill_requested;
-    pthread_mutex_t *mutex;
-    sem_t *druid_sem;
-    sem_t *villagers_sem;
+    unsigned int fight_ms;
+    pthread_mutex_t mutex;
+    sem_t druid_sem;
+    sem_t villagers_sem;
 } datathread_t;
 
 extern datathread_t data;
 
-int my_putstr(char const *str);
 void print_usage(void);
+bool parse_arguments(int ac, char **av);
 void *druid_thread(void *arg);
 void *villager_thread(void *arg);
-void free_all(pthread_t *druid, pthread_t *villager);
-void create_join_thread(pthread_t *druid, pthread_t *villager);
+int run_simulation(void);

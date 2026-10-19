@@ -1,0 +1,13 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (-Wall -Wextra -Werror)
+        run: make
+      - name: Stress tests under ThreadSanitizer and AddressSanitizer
+        run: make tests_run

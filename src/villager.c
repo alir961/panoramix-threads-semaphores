@@ -1,61 +1,65 @@
 /*
 ** EPITECH PROJECT, 2023
-** B-CCP-400-LYN-4-1-panoramix-ali.raad
+** panoramix
 ** File description:
 ** villager
 */
 
 #include "../inc/panoramix.h"
 
-bool drink_potion(intptr_t id)
+/*
+** Called with the mutex held. Returns with it held.
+** The mutex is released while waiting, so the druid can take it to refill.
+*/
+static bool wait_for_refill(intptr_t id)
 {
-    intptr_t nb_fights_left = data.nb_fights_left[id];
-
-    if (data.pot_size > 0) {
-        data.pot_size--;
-        nb_fights_left--;
-        data.nb_fights_left[id] = nb_fights_left;
-        data.portions_left--;
-        printf(ATTACK(id, nb_fights_left));
-        pthread_mutex_unlock(data.mutex);
-        return true;
-    }
-    pthread_mutex_unlock(data.mutex);
-    return false;
-}
-
-bool villager_handling(intptr_t id)
-{
-    pthread_mutex_lock(data.mutex);
-    printf(VILLAGER_NEED(id, data.portions_left));
-    if (drink_potion(id))
-        return true;
-    if (!data.refill_requested && data.nb_refills != 0) {
+    if (data.nb_refills == 0)
+        return false;
+    if (!data.refill_requested) {
         printf("Villager %ld: Hey Pano wake up! We need more potion.\n", id);
         data.refill_requested = true;
-        sem_post(data.druid_sem);
-        sem_wait(data.villagers_sem);
-        if (drink_potion(id)) {
-            pthread_mutex_unlock(data.mutex);
-            return true;
+        sem_post(&data.druid_sem);
+    }
+    data.waiting_villagers++;
+    pthread_mutex_unlock(&data.mutex);
+    sem_wait(&data.villagers_sem);
+    pthread_mutex_lock(&data.mutex);
+    return true;
+}
+
+/* Returns false when the pot is empty for good */
+static bool drink(intptr_t id, int *fights_left)
+{
+    pthread_mutex_lock(&data.mutex);
+    printf("Villager %ld: I need a drink... I see %d servings left.\n",
+        id, data.servings_left);
+    while (data.servings_left == 0) {
+        if (!wait_for_refill(id)) {
+            pthread_mutex_unlock(&data.mutex);
+            return false;
         }
     }
-    return false;
+    data.servings_left--;
+    (*fights_left)--;
+    printf("Villager %ld: Take that roman scum! Only %d left.\n",
+        id, *fights_left);
+    pthread_mutex_unlock(&data.mutex);
+    return true;
 }
 
 void *villager_thread(void *arg)
 {
-    intptr_t id = (intptr_t) arg;
+    intptr_t id = (intptr_t)arg;
+    int fights_left = data.nb_fights;
 
     printf("Villager %ld: Going into battle!\n", id);
-
-    while (data.nb_fights_left[id] > 0) {
-        if (!villager_handling(id))
-            break;
-        sleep(1);
-    }
-    data.nb_fights_left[id] = 0;
-    sem_post(data.druid_sem);
+    while (fights_left > 0 && drink(id, &fights_left))
+        usleep(data.fight_ms * 1000);
     printf("Villager %ld: I'm going to sleep now.\n", id);
+    pthread_mutex_lock(&data.mutex);
+    data.active_villagers--;
+    if (data.active_villagers == 0)
+        sem_post(&data.druid_sem);
+    pthread_mutex_unlock(&data.mutex);
     return NULL;
 }

@@ -1,4 +1,4 @@
 *.o
-.vscode
 panoramix
-.idea
+panoramix_tsan
+panoramix_asan

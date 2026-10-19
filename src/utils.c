@@ -1,57 +1,83 @@
 /*
 ** EPITECH PROJECT, 2023
-** B-CCP-400-LYN-4-1-panoramix-ali.raad
+** panoramix
 ** File description:
-** utils
+** argument parsing and thread lifecycle
 */
 
+#include <errno.h>
+#include <limits.h>
 #include "../inc/panoramix.h"
-
-int my_putstr(char const *str)
-{
-    int a = 0;
-
-    while (str[a] != '\0') {
-        write(1, &str[a], 1);
-        a++;
-    }
-}
 
 void print_usage(void)
 {
-    my_putstr("USAGE: ./panoramix <nb_villagers> ");
-    my_putstr("<pot_size> <nb_fights> <nb_refills>\n");
+    printf("USAGE: ./panoramix <nb_villagers> <pot_size> "
+        "<nb_fights> <nb_refills>\n");
+    printf("Values must be > 0\n");
 }
 
-void free_all(pthread_t *druid, pthread_t *villager)
+static bool parse_positive(const char *str, int *out)
 {
-    pthread_mutex_destroy(data.mutex);
-    sem_destroy(data.villagers_sem);
-    sem_destroy(data.druid_sem);
-    free(data.nb_fights_left);
-    free(druid);
-    free(villager);
+    char *end = NULL;
+    long value;
+
+    errno = 0;
+    value = strtol(str, &end, 10);
+    if (errno != 0 || end == str || *end != '\0' || value <= 0
+        || value > INT_MAX)
+        return false;
+    *out = (int)value;
+    return true;
 }
 
-void create_join_thread(pthread_t *druid, pthread_t *villager)
+bool parse_arguments(int ac, char **av)
 {
-    uintptr_t id2 = 0;
+    const char *fight_ms = getenv("PANORAMIX_FIGHT_MS");
 
-    for (uintptr_t id = 0; id < data.nb_villagers; id++) {
-        if (pthread_create(&villager[id], NULL, villager_thread, (void*)id)) {
-            printf("Error creating villager thread\n");
-            exit(84);
-        }
-        id2 = id;
-    }
+    if (ac != 5 || !parse_positive(av[1], &data.nb_villagers)
+        || !parse_positive(av[2], &data.pot_size)
+        || !parse_positive(av[3], &data.nb_fights)
+        || !parse_positive(av[4], &data.nb_refills))
+        return false;
+    data.servings_left = data.pot_size;
+    data.active_villagers = data.nb_villagers;
+    data.waiting_villagers = 0;
+    data.refill_requested = false;
+    data.fight_ms = fight_ms ? (unsigned int)atoi(fight_ms) : 1000;
+    return true;
+}
 
-    if (pthread_create(druid, NULL, druid_thread, (void*)id2)) {
-            printf("Error creating druid thread\n");
-            exit(84);
-    }
+static int join_all(pthread_t *villagers, int created, pthread_t *druid)
+{
+    for (int i = 0; i < created; i++)
+        pthread_join(villagers[i], NULL);
+    if (druid)
+        pthread_join(*druid, NULL);
+    return created == data.nb_villagers && druid ? 0 : EXIT_ERROR;
+}
 
-    for (int i = 0; i < data.nb_villagers; i++) {
-        pthread_join(villager[i], NULL);
-    }
-    pthread_join(*druid, NULL);
+int run_simulation(void)
+{
+    pthread_t druid;
+    pthread_t *villagers = malloc(sizeof(pthread_t) * data.nb_villagers);
+    int created = 0;
+    int status;
+
+    if (!villagers)
+        return EXIT_ERROR;
+    pthread_mutex_init(&data.mutex, NULL);
+    sem_init(&data.druid_sem, 0, 0);
+    sem_init(&data.villagers_sem, 0, 0);
+    if (pthread_create(&druid, NULL, druid_thread, NULL) != 0)
+        return free(villagers), EXIT_ERROR;
+    for (; created < data.nb_villagers; created++)
+        if (pthread_create(&villagers[created], NULL, villager_thread,
+            (void *)(intptr_t)created) != 0)
+            break;
+    status = join_all(villagers, created, &druid);
+    pthread_mutex_destroy(&data.mutex);
+    sem_destroy(&data.druid_sem);
+    sem_destroy(&data.villagers_sem);
+    free(villagers);
+    return status;
 }
