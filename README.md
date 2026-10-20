@@ -4,13 +4,42 @@
 
 A classic concurrency problem written in C with POSIX threads, a mutex and semaphores. Villagers (threads) drink a serving from a shared pot before each fight. When the pot is empty, one villager wakes the druid (another thread), who refills it a limited number of times. Everyone must finish without deadlocks, lost wake-ups or data races.
 
-Requirements: Linux, a C compiler and make (POSIX threads and unnamed semaphores, which macOS does not support).
+## Supported platforms
+
+| OS | Status |
+|---|---|
+| Linux (any distribution) | Supported, tested on Ubuntu (CI) and Arch |
+| Windows | Through **WSL 2** (Ubuntu): install `build-essential` there and follow the Linux steps |
+| macOS | Not supported: unnamed POSIX semaphores (`sem_init`) are not implemented |
+
+## Requirements
+
+- **Linux** (or WSL 2 on Windows): POSIX threads and unnamed semaphores
+- **gcc** and **make** (on Debian/Ubuntu: `sudo apt install build-essential`)
+- For the test suite only: **bash**, `timeout` (GNU coreutils) and a gcc with the ThreadSanitizer and AddressSanitizer runtimes (`libtsan`, `libasan`, `libubsan`; bundled with gcc on most distributions)
+
+## Build and run
 
 ```bash
-make
+git clone https://github.com/alir961/panoramix-threads-semaphores.git
+cd panoramix-threads-semaphores
+make                       # builds ./panoramix with -Wall -Wextra -Werror
 ./panoramix <nb_villagers> <pot_size> <nb_fights> <nb_refills>
 ./panoramix 3 2 2 1
 ```
+
+| Argument | Meaning |
+|---|---|
+| `nb_villagers` | number of villager threads |
+| `pot_size` | servings in a full pot |
+| `nb_fights` | fights each villager wants to do (one serving per fight) |
+| `nb_refills` | how many times the druid can refill the pot |
+
+All four must be integers greater than 0. Otherwise the program prints its usage and exits with code 84. Each fight lasts 1 s by default; `PANORAMIX_FIGHT_MS=0 ./panoramix 3 2 2 1` runs instantly.
+
+`make clean` removes the object files, `make fclean` also removes the binaries, `make re` rebuilds from scratch.
+
+Example output:
 
 ```
 Druid: I'm ready... but sleepy...
@@ -31,6 +60,17 @@ Villager 0: Take that roman scum! Only 1 left.
 
 Thread scheduling decides the order, so it changes from run to run.
 
+## Project layout
+
+```
+src/main.c      entry point
+src/utils.c     argument parsing, thread creation and joining
+src/villager.c  villager thread
+src/druid.c     druid thread
+inc/panoramix.h shared state and prototypes
+tests/stress.sh invariant checks over 96 parameter combinations
+```
+
 ## Design
 
 - One **mutex** protects all shared state: servings, refills left, active and waiting villagers.
@@ -50,7 +90,10 @@ Thread scheduling decides the order, so it changes from run to run.
 
 ```bash
 make tests_run   # builds with -fsanitize=thread and -fsanitize=address,undefined and runs the suite on both
+tests/stress.sh ./panoramix   # or run the suite on any build
 ```
+
+Each run has a 20 s timeout (`TIMEOUT=60 tests/stress.sh ./panoramix_tsan` to raise it on a slow machine).
 
 `PANORAMIX_FIGHT_MS` sets the fight duration (default 1000 ms). The tests set it to 0 to run fast.
 
