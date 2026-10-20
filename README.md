@@ -4,6 +4,8 @@
 
 A classic concurrency problem written in C with POSIX threads, a mutex and semaphores. Villagers (threads) drink a serving from a shared pot before each fight. When the pot is empty, one villager wakes the druid (another thread), who refills it a limited number of times. Everyone must finish without deadlocks, lost wake-ups or data races.
 
+Requirements: Linux, a C compiler and make (POSIX threads and unnamed semaphores, which macOS does not support).
+
 ```bash
 make
 ./panoramix <nb_villagers> <pot_size> <nb_fights> <nb_refills>
