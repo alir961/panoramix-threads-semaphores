@@ -56,6 +56,19 @@ static int join_all(pthread_t *villagers, int created, pthread_t *druid)
     return created == data.nb_villagers && druid ? 0 : EXIT_ERROR;
 }
 
+/*
+** Villagers whose thread could not be created will never go to sleep, so
+** stop counting them; otherwise the druid would wait for them forever.
+*/
+static void forget_missing_villagers(int created)
+{
+    pthread_mutex_lock(&data.mutex);
+    data.active_villagers -= data.nb_villagers - created;
+    if (created < data.nb_villagers && data.active_villagers == 0)
+        sem_post(&data.druid_sem);
+    pthread_mutex_unlock(&data.mutex);
+}
+
 int run_simulation(void)
 {
     pthread_t druid;
@@ -74,6 +87,7 @@ int run_simulation(void)
         if (pthread_create(&villagers[created], NULL, villager_thread,
             (void *)(intptr_t)created) != 0)
             break;
+    forget_missing_villagers(created);
     status = join_all(villagers, created, &druid);
     pthread_mutex_destroy(&data.mutex);
     sem_destroy(&data.druid_sem);
