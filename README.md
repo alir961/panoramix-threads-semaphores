@@ -111,3 +111,7 @@ My first version (Epitech, 2023) hung or crashed in **60 of the 96 cases**. Thre
 | Compiler flags set in `FLAGS`, which make ignores | Warnings never enforced |
 
 The current version passes the whole suite under both sanitizers, repeatedly. CI runs it on every push.
+
+## License
+
+[MIT](LICENSE)
